@@ -4,15 +4,16 @@
   (:use #:cl)
   (:import-from :aviation-formulary
 		:pp
-		:2d-point
+		:geocode-point
 		:point-lat
 		:point-lon
+		:address
 		:lat
 		:lon)
   (:export :pp
 	   :point-lat
 	   :point-lon
-	   :description
+	   :address
 	   :lookup-location
 	   :lookup-place
 	   :extract-street-address-from-json

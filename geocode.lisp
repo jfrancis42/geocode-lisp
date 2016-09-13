@@ -51,20 +51,20 @@ result."
 address."
   (let* ((json (lookup-place addr google-api-key))
 	 (ll (extract-lat-lon-from-json json)))
-    (make-instance '2d-point
-		   :description (extract-street-address-from-json json)
+    (make-instance 'geocode-point
+		   :address (extract-street-address-from-json json)
 		   :lat (cdr (assoc :lat ll))
 		   :lon (cdr (assoc :lng ll)))))
 
 (defun lat-lon-to-location (lat lon google-api-key)
   "Convert an arbitrary lat/lon into a location."
-  (lookup-location (make-instance '2d-point :lat lat :lon lon) google-api-key))
+  (lookup-location (make-instance 'geocode-point :lat lat :lon lon) google-api-key))
 
 (defun lat-lon-to-street-address (lat lon google-api-key)
   "Convert an arbitrary lat/lon into a street address."
   (let* ((json (lat-lon-to-location lat lon google-api-key))
 	 (ll (extract-lat-lon-from-json json)))
-    (make-instance '2d-point
-		   :description (extract-street-address-from-json json)
+    (make-instance 'geocode-point
+		   :address (extract-street-address-from-json json)
 		   :lat (cdr (assoc :lat ll))
 		   :lon (cdr (assoc :lng ll)))))
