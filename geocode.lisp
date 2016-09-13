@@ -62,4 +62,9 @@ address."
 
 (defun lat-lon-to-street-address (lat lon google-api-key)
   "Convert an arbitrary lat/lon into a street address."
-  (extract-street-address-from-json (lat-lon-to-location lat lon google-api-key)))
+  (let* ((json (lat-lon-to-location lat lon google-api-key))
+	 (ll (extract-lat-lon-from-json json)))
+    (make-instance '2d-point
+		   :description (extract-street-address-from-json json)
+		   :lat (cdr (assoc :lat ll))
+		   :lon (cdr (assoc :lng ll)))))
