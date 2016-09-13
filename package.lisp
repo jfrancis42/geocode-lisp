@@ -13,6 +13,7 @@
   (:export :pp
 	   :point-lat
 	   :point-lon
+	   :geocode-point
 	   :address
 	   :lookup-location
 	   :lookup-place
