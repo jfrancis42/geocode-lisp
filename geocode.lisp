@@ -21,9 +21,6 @@ address to lat lon)."
 				       (nth-value 0 result)))
 	nil)))
 
-;; (assoc :formatted--address (cadar foo))
-;; (cdr (assoc :location (cdr (assoc :geometry (cadar foo)))))
-
 (defun lookup-location (loc google-api-key)
   "Use the Google Geocoding API to do a reverse geocode lookup (ie,
 convert lat lon to address)."
