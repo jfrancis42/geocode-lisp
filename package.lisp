@@ -5,6 +5,7 @@
   (:import-from :aviation-formulary
 		:pp
 		:geocode-point
+		:2d-point
 		:point-lat
 		:point-lon
 		:address
