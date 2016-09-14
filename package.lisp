@@ -23,5 +23,6 @@
 	   :lookup-place
 	   :extract-street-address-from-json
 	   :street-address-to-lat-lon
+	   :location-to-street-address
 	   :lat-lon-to-location
 	   :lat-lon-to-street-address))

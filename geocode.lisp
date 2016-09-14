@@ -69,6 +69,16 @@ address."
 		   :lat (cdr (assoc :lat ll))
 		   :lon (cdr (assoc :lng ll)))))
 
+(defun location-to-street-address (loc google-api-key)
+  "Use lat/lon from a location object to create a new fully-populated
+location object."
+  (let* ((json (lat-lon-to-location (point-lat loc) (point-lon loc) google-api-key))
+	 (ll (extract-lat-lon-from-json json)))
+    (make-instance 'geocode-point
+		   :address (extract-street-address-from-json json)
+		   :lat (cdr (assoc :lat ll))
+		   :lon (cdr (assoc :lng ll)))))
+
 (defun google-url-hybrid (p)
   "Print a google url for this point.."
   (format nil "http://maps.google.com/maps?ll=~F,~F&spn=0.006362199783325195,0.009344816207885742&t=h&hl=en"
