@@ -9,6 +9,10 @@
 		:point-lat
 		:point-lon
 		:address
+		:point-creation-time
+		:point-name
+		:point-description
+		:point-datum
 		:lat
 		:lon)
   (:export :pp

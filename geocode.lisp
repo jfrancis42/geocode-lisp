@@ -2,6 +2,56 @@
 
 (in-package #:geocode)
 
+(defconstant point-geocode 4)
+
+;;  Decendant of the aviation-formulary's 2d-point.  Adds an address
+;;  field for Google's geocoding service.
+(defclass geocode-point (af:2d-point)
+  ((address :accessor address
+	    :initarg :address
+	    :initform nil)))
+
+(defmethod point-serialize ((p geocode-point))
+  "Serialize a GEOCODE point."
+  (append
+   (list
+    '(type geocode-point)
+    (list 'lat (point-lat p))
+    (list 'lon (point-lon p))
+    (list 'datum (point-datum p))
+    (list 'address (address p))
+    )
+   (af:point-metadata-serialize p)))
+
+(defmethod pp ((p geocode-point))
+  "Pretty print a geocode point."
+  (format t "Time: ~A~%" (local-time:unix-to-timestamp (point-creation-time p)))
+  (format t "Age (sec): ~A~%" (- (local-time:timestamp-to-unix (local-time:now)) (point-creation-time p)))
+  (format t "Name:  ~A~%" (point-name p))
+  (format t "Descr:  ~A~%" (point-description p))
+  (format t "Lat:  ~F~%" (point-lat p))
+  (format t "Lon:  ~F~%" (point-lon p))
+  (format t "Address: ~A~%" (address p))
+  (format t "Datum:  ~A~%" (point-datum p)))
+
+(defmethod point-deserialize-method ((p geocode-point) point-data)
+  "Create an object from the data dumped by 'point-serialize'.  If the
+optional point-type value is supplied, the created object will be of
+that type."
+  (point-metadata-deserialize-method p point-data)
+  (mapcar #'(lambda (n)
+	      (cond
+	       ((equal (first n) 'lat)
+		(setf (point-lat p) (second n)))
+	       ((equal (first n) 'lon)
+		(setf (point-lon p) (second n)))
+	       ((equal (first n) 'address)
+		(setf (address p) (second n)))
+	       ((equal (first n) 'datum)
+		(setf (point-datum p) (second n)))
+	       ))
+	  point-data))
+
 (defun bytes-to-ascii (bytelist)
   "Turn a list of bytes into string."
   (map 'string #'code-char bytelist))
