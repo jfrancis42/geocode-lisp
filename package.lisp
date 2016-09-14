@@ -11,6 +11,9 @@
 		:lat
 		:lon)
   (:export :pp
+	   :google-url-hybrid
+	   :google-url-photo
+	   :google-url-map
 	   :point-lat
 	   :point-lon
 	   :geocode-point

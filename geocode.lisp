@@ -68,3 +68,19 @@ address."
 		   :address (extract-street-address-from-json json)
 		   :lat (cdr (assoc :lat ll))
 		   :lon (cdr (assoc :lng ll)))))
+
+(defmethod google-url-hybrid ((p 2d-point))
+  "Print a google url for this point.."
+  (format nil "http://maps.google.com/maps?ll=~F,~F&spn=0.006362199783325195,0.009344816207885742&t=h&hl=en"
+	  (point-lat p) (point-lon p)))
+
+(defmethod google-url-photo ((p 2d-point))
+  "Print a google url for this point.."
+  (format nil "http://maps.google.com/maps?ll=~F,~F&spn=0.006362199783325195,0.009344816207885742&t=k&hl=en"
+	  (point-lat p) (point-lon p)))
+
+(defmethod google-url-map ((p 2d-point))
+  "Print a google url for this point.."
+  (format nil "http://maps.google.com/maps?spn=~F,~F&hl=en"
+	  (point-lat p) (point-lon p)))
+
