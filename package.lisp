@@ -4,23 +4,30 @@
   (:use #:cl)
   (:import-from :aviation-formulary
 		:pp
-		:geocode-point
-		:2d-point
-		:point-lat
-		:point-lon
-		:address
+		:point-serial-number
 		:point-creation-time
+		:point-creation-source
 		:point-name
 		:point-description
+		:point-lat
+		:point-lon
 		:point-datum
-		:lat
-		:lon)
+		:point-alt
+		:2d-point)
   (:export :pp
+	   :point-serial-number
+	   :point-creation-time
+	   :point-creation-source
+	   :point-name
+	   :point-description
+	   :point-lat
+	   :point-lon
+	   :point-datum
+	   :point-alt
+	   :point-address
 	   :google-url-hybrid
 	   :google-url-photo
 	   :google-url-map
-	   :point-lat
-	   :point-lon
 	   :geocode-point
 	   :address
 	   :lookup-location

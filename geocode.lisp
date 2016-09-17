@@ -7,7 +7,7 @@
 ;;  Decendant of the aviation-formulary's 2d-point.  Adds an address
 ;;  field for Google's geocoding service.
 (defclass geocode-point (af:2d-point)
-  ((address :accessor address
+  ((address :accessor point-address
 	    :initarg :address
 	    :initform nil)))
 
@@ -19,7 +19,7 @@
     (list 'lat (point-lat p))
     (list 'lon (point-lon p))
     (list 'datum (point-datum p))
-    (list 'address (address p))
+    (list 'address (point-address p))
     )
    (af:point-metadata-serialize p)))
 
@@ -31,7 +31,7 @@
   (format t "Descr:  ~A~%" (point-description p))
   (format t "Lat:  ~F~%" (point-lat p))
   (format t "Lon:  ~F~%" (point-lon p))
-  (format t "Address: ~A~%" (address p))
+  (format t "Address: ~A~%" (point-address p))
   (format t "Datum:  ~A~%" (point-datum p)))
 
 (defmethod point-deserialize-method ((p geocode-point) point-data)
@@ -46,7 +46,7 @@ that type."
 	       ((equal (first n) 'lon)
 		(setf (point-lon p) (second n)))
 	       ((equal (first n) 'address)
-		(setf (address p) (second n)))
+		(setf (point-address p) (second n)))
 	       ((equal (first n) 'datum)
 		(setf (point-datum p) (second n)))
 	       ))
