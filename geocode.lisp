@@ -52,10 +52,6 @@ that type."
 	       ))
 	  point-data))
 
-(defun bytes-to-ascii (bytelist)
-  "Turn a list of bytes into string."
-  (map 'string #'code-char bytelist))
-
 (defun lookup-place (place google-api-key)
     "Use the Google Geocoding API to do a  geocode lookup (ie,
 address to lat lon)."
@@ -67,7 +63,7 @@ address to lat lon)."
 				      :accept "application/json"
 				      :content-type "application/json")))
     (if (> (length result) 0)
-	(json:decode-json-from-string (bytes-to-ascii 
+	(json:decode-json-from-string (babel:octets-to-string 
 				       (nth-value 0 result)))
 	nil)))
 
@@ -83,7 +79,7 @@ convert lat lon to address)."
 				      :accept "application/json"
 				      :content-type "application/json")))
     (if (> (length result) 0)
-	(json:decode-json-from-string (bytes-to-ascii 
+	(json:decode-json-from-string (babel:octets-to-string 
 				       (nth-value 0 result)))
 	nil)))
 
