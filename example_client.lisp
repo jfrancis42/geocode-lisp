@@ -10,4 +10,4 @@
 
 (defun what-is-the-address-of-the-whitehouse? ()
   "Return the address of 38.89761,-77.036736."
-  (geocode:address (geocode:lat-lon-to-street-address 38.89761 -77.036736 (creds:get-cred "googlegeoapi"))))
+  (geocode:point-address (geocode:lat-lon-to-street-address 38.89761 -77.036736 (creds:get-cred "googlegeoapi"))))

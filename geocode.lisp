@@ -4,6 +4,11 @@
 
 (defconstant point-geocode 4)
 
+(defmacro cdr-assoc (name alist)
+  "Replaces '(cdr (assoc name alist))' because it's used a bajillion
+times when doing API stuff."
+  `(cdr (assoc ,name ,alist :test #'equal)))
+
 ;;  Decendant of the aviation-formulary's 2d-point.  Adds an address
 ;;  field for Google's geocoding service.
 (defclass geocode-point (af:2d-point)
@@ -25,8 +30,11 @@
 
 (defmethod pp ((p geocode-point))
   "Pretty print a geocode point."
-  (format t "Time: ~A~%" (local-time:unix-to-timestamp (point-creation-time p)))
-  (format t "Age (sec): ~A~%" (- (local-time:timestamp-to-unix (local-time:now)) (point-creation-time p)))
+  (format t "Time: ~A~%" (local-time:unix-to-timestamp
+			  (point-creation-time p)))
+  (format t "Age (sec): ~A~%" (- (local-time:timestamp-to-unix
+				  (local-time:now))
+				 (point-creation-time p)))
   (format t "Name:  ~A~%" (point-name p))
   (format t "Descr:  ~A~%" (point-description p))
   (format t "Lat:  ~F~%" (point-lat p))
@@ -55,13 +63,18 @@ that type."
 (defun lookup-place (place google-api-key)
     "Use the Google Geocoding API to do a  geocode lookup (ie,
 address to lat lon)."
-  (let* ((url (concatenate 'string "https://maps.googleapis.com/maps/api/geocode/json?address="
-			   (drakma:url-encode place :utf-8)
-			   "&key=" google-api-key))
-	 (result (drakma:http-request url
-				      :method :get
-				      :accept "application/json"
-				      :content-type "application/json")))
+    (let*
+	((url
+	  (concatenate
+	   'string
+	   "https://maps.googleapis.com/maps/api/geocode/json?address="
+	   (drakma:url-encode place :utf-8)
+	   "&key=" google-api-key))
+	 (result
+	  (drakma:http-request url
+			       :method :get
+			       :accept "application/json"
+			       :content-type "application/json")))
     (if (> (length result) 0)
 	(json:decode-json-from-string (babel:octets-to-string 
 				       (nth-value 0 result)))
@@ -70,27 +83,33 @@ address to lat lon)."
 (defun lookup-location (loc google-api-key)
   "Use the Google Geocoding API to do a reverse geocode lookup (ie,
 convert lat lon to address)."
-  (let* ((url (concatenate 'string "https://maps.googleapis.com/maps/api/geocode/json?latlng="
-			   (format nil "~A" (point-lat loc)) ","
-			   (format nil "~A" (point-lon loc))
-			   "&key=" google-api-key))
-	 (result (drakma:http-request url
-				      :method :get
-				      :accept "application/json"
-				      :content-type "application/json")))
+  (let*
+      ((url
+	(concatenate
+	 'string
+	 "https://maps.googleapis.com/maps/api/geocode/json?latlng="
+	 (format nil "~A" (point-lat loc)) ","
+	 (format nil "~A" (point-lon loc))
+	 "&key=" google-api-key))
+       (result
+	(drakma:http-request url
+			     :method :get
+			     :accept "application/json"
+			     :content-type "application/json")))
     (if (> (length result) 0)
-	(json:decode-json-from-string (babel:octets-to-string 
-				       (nth-value 0 result)))
+	(json:decode-json-from-string
+	 (babel:octets-to-string 
+	  (nth-value 0 result)))
 	nil)))
 
 (defun extract-street-address-from-json (geocoded-result)
   "Extract the formatted street address from (lookup-location)
 result."
-  (cdr (assoc :formatted--address (cadar geocoded-result))))
+  (cdr-assoc :formatted--address (cadar geocoded-result)))
 
 (defun extract-lat-lon-from-json (geocoded-result)
   "Extract the lat/lon from (lookup-location) result."
-  (cdr (assoc :location (cdr (assoc :geometry (cadar geocoded-result))))))
+  (cdr-assoc :location (cdr-assoc :geometry (cadar geocoded-result))))
 
 (defun street-address-to-lat-lon (addr google-api-key)
   "Return an object representing the location of the given street
@@ -99,12 +118,13 @@ address."
 	 (ll (extract-lat-lon-from-json json)))
     (make-instance 'geocode-point
 		   :address (extract-street-address-from-json json)
-		   :lat (cdr (assoc :lat ll))
-		   :lon (cdr (assoc :lng ll)))))
+		   :lat (cdr-assoc :lat ll)
+		   :lon (cdr-assoc :lng ll))))
 
 (defun lat-lon-to-location (lat lon google-api-key)
   "Convert an arbitrary lat/lon into a location."
-  (lookup-location (make-instance 'geocode-point :lat lat :lon lon) google-api-key))
+  (lookup-location
+   (make-instance 'geocode-point :lat lat :lon lon) google-api-key))
 
 (defun lat-lon-to-street-address (lat lon google-api-key)
   "Convert an arbitrary lat/lon into a street address."
@@ -112,31 +132,35 @@ address."
 	 (ll (extract-lat-lon-from-json json)))
     (make-instance 'geocode-point
 		   :address (extract-street-address-from-json json)
-		   :lat (cdr (assoc :lat ll))
-		   :lon (cdr (assoc :lng ll)))))
+		   :lat (cdr-assoc :lat ll)
+		   :lon (cdr-assoc :lng ll))))
 
 (defun location-to-street-address (loc google-api-key)
   "Use lat/lon from a location object to create a new fully-populated
 location object."
-  (let* ((json (lat-lon-to-location (point-lat loc) (point-lon loc) google-api-key))
+  (let*
+      ((json
+	(lat-lon-to-location (point-lat loc)
+			     (point-lon loc)
+			     google-api-key))
 	 (ll (extract-lat-lon-from-json json)))
     (make-instance 'geocode-point
 		   :address (extract-street-address-from-json json)
-		   :lat (cdr (assoc :lat ll))
-		   :lon (cdr (assoc :lng ll)))))
+		   :lat (cdr-assoc :lat ll)
+		   :lon (cdr-assoc :lng ll))))
 
 (defun google-url-hybrid (p)
-  "Print a google url for this point.."
+  "Return a google url for this point.."
   (format nil "http://maps.google.com/maps?ll=~F,~F&spn=0.006362199783325195,0.009344816207885742&t=h&hl=en"
 	  (point-lat p) (point-lon p)))
 
 (defun google-url-photo (p)
-  "Print a google url for this point.."
+  "Return a google url for this point.."
   (format nil "http://maps.google.com/maps?ll=~F,~F&spn=0.006362199783325195,0.009344816207885742&t=k&hl=en"
 	  (point-lat p) (point-lon p)))
 
 (defun google-url-map (p)
-  "Print a google url for this point.."
+  "Return a google url for this point.."
   (format nil "http://maps.google.com/maps?spn=~F,~F&hl=en"
 	  (point-lat p) (point-lon p)))
 
